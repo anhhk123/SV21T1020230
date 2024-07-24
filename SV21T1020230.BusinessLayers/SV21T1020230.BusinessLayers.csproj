@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SV21T1020230.DataLayers\SV21T1020230.DataLayers.csproj" />
+    <ProjectReference Include="..\SV21T1020230.DomainModels\SV21T1020230.DomainModels.csproj" />
+  </ItemGroup>
+
 </Project>

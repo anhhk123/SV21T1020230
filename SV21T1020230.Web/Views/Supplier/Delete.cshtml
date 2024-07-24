@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Xóa nhà cung cấp";
+}
+<div class="box box-danger">
+    <div class="box box-body">
+        <form action="~/Supplier/Delete" method="post">
+            <div class="form-group">
+                <label>Tên nhà cung cấp</label>
+                <p class="form-control-static">Công ty Xuất nhập khẩu Thành Hưng</p>
+            </div>
+            <div class="form-group">
+                <label>Tên liên hệ</label>
+                <p class="form-control-static">Công ty Thành Hưng</p>
+
+            </div>
+            <div class="form-group">
+                <label>Tỉnh thành</label>
+                <p class="form-control-static">Hà Nội</p>
+
+            </div>
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                <p class="form-control-static">123 Phùng Hưng</p>
+
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <p class="form-control-static">0977555123</p>
+
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <p class="form-control-static">thanhhung@company.com</p>
+
+            </div>
+            
+            <div class="form-group text-right">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa fa-trash"></i>
+                    Xóa dữ liệu
+                </button>
+                <a href="~/Supplier" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
