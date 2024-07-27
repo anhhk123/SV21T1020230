@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Xóa sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="box box-danger">
+    <div class="box box-body">
+        <form action="~/Product/Delete" method="post">
+            <div class="form-group">
+                <label>Tên sản phẩm</label>
+                <p class="form-control-static">04528-Xe tập đi Chicco, Xanh dương</p>
+            </div>
+            <div class="form-group">
+                <label>Chi tiết sản phẩm</label>
+                <p class="form-control-static">0336238660</p>
+
+            </div>
+            <div class="form-group">
+                <label>Đơn vị tính</label>
+                <p class="form-control-static">cái</p>
+
+            </div>
+            <div class="form-group">
+                <label>Giá bán</label>
+                <p class="form-control-static">2590000.00</p>
+
+            </div>
+            <div class="form-group">
+                <label>Đang bán</label>
+                <p class="form-control-static"></p>
+
+            </div>
+
+            <div class="form-group text-right">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fa fa-trash"></i>
+                    Xóa dữ liệu
+                </button>
+                <a href="~/Product" class="btn btn-default">
+                    Quay lại
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
