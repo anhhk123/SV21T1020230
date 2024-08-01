@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace SV21T1020230.DomainModels
 {
-    public class Shipper
+    public class Province
     {
-        public int ShipperID { get; set; }
-        public string ShipperName { get; set; }
-        public string Phone { get; set; }
+        public string ProvinceName { get; set; }
     }
 }
