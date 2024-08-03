@@ -2,6 +2,7 @@
 using SV21T1020230.DomainModels;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,27 @@ namespace SV21T1020230.DataLayers.SQLSever
 
         public int Add(Customer data)
         {
-            throw new NotImplementedException();
+            int id = 0;
+            using (var connection = OpenConnection())
+            {
+                var sql = @"INSERT INTO Customers(CustomerName,ContactName,Province,Address,Phone,Email,IsLocked)
+                VALUES(@CustomerName,@ContactName,@Province,@Address,@Phone,@Email,@IsLocked);
+                    SELECT @@IDENTITY";
+                var parameters = new
+                {
+                    CustomerName = data.CustomerName ?? "",
+                    ContactName = data.ContactName ?? "",
+                    Province = data.Province ?? "",
+                    Address = data.Address ?? "",
+                    Phone = data.Phone ?? "",
+                    Email = data.Email ?? "",
+                    IsLocked = data.IsLocked,
+                };
+                id = connection.ExecuteScalar<int>(sql: sql, param: parameters, commandType: CommandType.Text);
+                connection.Close();
+
+            }
+            return id;
         }
 
         public int Count(string searchValue = "")
@@ -46,19 +67,54 @@ namespace SV21T1020230.DataLayers.SQLSever
             }
         }
 
-        public bool Delete(Customer data)
+        public bool Delete(int id)
         {
-            throw new NotImplementedException();
+            bool result = false;
+            using (var connection = OpenConnection())
+            {
+                var sql = @"DELETE FROM Customers WHERE CustomerId = @CustomerId";
+                var param = new
+                {
+                    CustomerId = id
+                };
+                result = connection.Execute(sql, param, commandType: System.Data.CommandType.Text) > 0;
+                connection.Close();
+            }
+            return result;
         }
 
         public Customer? Get(int id)
         {
-            throw new NotImplementedException();
+            Customer? data = null;
+            using (var connection = OpenConnection())
+            {
+                var sql = @"SELECT * FROM Customers WHERE CustomerId = @CustomerId";
+                var param = new
+                {
+                    CustomerId = id
+                };
+                data = connection.QueryFirstOrDefault<Customer>(sql, param, commandType: System.Data.CommandType.Text);
+            }
+            return data;
         }
 
         public bool InUsed(int id)
         {
-            throw new NotImplementedException();
+            bool result = false;
+            using (var connection = OpenConnection())
+            {
+                var sql = @"IF EXISTS(SELECT * FROM Orders WHERE CustomerId = @CustomerId) 
+                                SELECT 1
+                            ELSE
+                                SELECT 0";
+                var param = new
+                {
+                    CustomerId = id
+                };
+                result = connection.ExecuteScalar<int>(sql, param, commandType: System.Data.CommandType.Text) > 0;
+                connection.Close();
+            }
+            return result;
         }
 
         public IList<Customer> List(int page = 1, int pageSize = 0, string searchValue = "")
@@ -90,7 +146,33 @@ namespace SV21T1020230.DataLayers.SQLSever
 
         public bool Update(Customer data)
         {
-            throw new NotImplementedException();
+            bool result = false;
+            using (var connection = OpenConnection())
+            {
+                var sql = @"UPDATE Customers
+                     SET CustomerName = @CustomerName,
+                             ContactName  = @ContactName, 
+                             Province     = @Province, 
+                             Address      = @Address, 
+                             Phone        = @Phone, 
+                             Email        = @Email, 
+                             IsLocked      = @IsLocked
+                     WHERE CustomerId = @CustomerId";
+
+                var param = new
+                {
+                    CustomerId = data.CustomerId,
+                    CustomerName = data.CustomerName ?? "",
+                    ContactName = data.ContactName ?? "",
+                    Province = data.Province ?? "",
+                    Address = data.Address ?? "",
+                    Phone = data.Phone ?? "",
+                    Email = data.Email ?? "",
+                    IsLocked = data.IsLocked
+                };
+                result = connection.ExecuteScalar<int>(sql: sql, param: param, commandType: System.Data.CommandType.Text) > 0;
+            }
+            return result;
         }
     }
 }

@@ -45,7 +45,7 @@ namespace SV21T1020230.DataLayers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        bool Delete(T data);
+        bool Delete(int id);
         /// <summary>
         /// Kiểm tra xem dữ liệu có có id này có liên quan đến các bảng khác không 
         /// </summary>

@@ -25,7 +25,7 @@ namespace SV21T1020230.DataLayers.SQLSever
             throw new NotImplementedException();
         }
 
-        public bool Delete(Province data)
+        public bool Delete(int id)
         {
             throw new NotImplementedException();
         }
