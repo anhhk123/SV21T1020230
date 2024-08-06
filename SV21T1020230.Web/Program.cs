@@ -20,6 +20,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-string connectionString = @"server=.;user id=sb;password=123;database=LiteCommerceDB;TrustServerCertificate=true";
+string connectionString = @"server=.;user id=sa;password=123;database=LiteCommerceDB;TrustServerCertificate=true";
 SV21T1020230.BusinessLayers.Configuration.Initialize(connectionString);
 app.Run();

@@ -24,6 +24,7 @@ namespace SV21T1020230.Web.Controllers
         }
         public IActionResult Create()
         {
+            
             ViewBag.Title = "Bổ sung khách hàng";
             Customer customer = new Customer()
             {
