@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SV21T1020230.BusinessLayers;
 using SV21T1020230.DomainModels;
+using SV21T1020230.Web.Models;
 
 namespace SV21T1020230.Web.Controllers
 {
@@ -10,17 +11,21 @@ namespace SV21T1020230.Web.Controllers
         public IActionResult Index(int page = 1 , string searchValue = "")
         {
             int rowCount = 0;
-            var data = CommonDataService.ListOfCustomers(out rowCount, page, PAGE_SZE, searchValue ?? "");
-            int pageCount = 1;
-            pageCount = rowCount/PAGE_SZE;
-            if (rowCount % PAGE_SZE > 0)
-                pageCount += 1;
+            var data = CommonDataService.ListOfCustomers(out rowCount, page, PAGE_SZE, searchValue);
+
+
+            CustomerSearchResult customerSearchResult = new CustomerSearchResult
+            {
+                Page = page,
+                RowCount = rowCount,
+                SearchValue = searchValue,
+                PageSize = PAGE_SZE,
+                data = data
+            };
+
 
             
-            ViewBag.RowCount = rowCount;
-            ViewBag.PageCount = pageCount;
-            ViewBag.SearchValue = searchValue;
-            return View(data);
+            return View(customerSearchResult);
         }
         public IActionResult Create()
         {
@@ -61,7 +66,24 @@ namespace SV21T1020230.Web.Controllers
         [HttpPost]
         public IActionResult Save(Customer data)
         {
-            if(data.CustomerId == 0)
+            ViewBag.Title = data.CustomerId == 0 ? "Bổ sung khách hàng" : "Cập nhật thông tin khách hàng";
+            if (string.IsNullOrEmpty(data.CustomerName))
+                ModelState.AddModelError(nameof(data.CustomerName), "Tên khách hàng không được để trống");
+            if (string.IsNullOrEmpty(data.ContactName))
+                ModelState.AddModelError(nameof(data.ContactName), "Tên giao dịch không được để trống");
+            if (string.IsNullOrEmpty(data.Province))
+                ModelState.AddModelError(nameof(data.Province), "Vui long chọn tỉnh thành");
+
+            data.Phone = data.Phone ?? "";
+            data.Email = data.Email ?? "";
+            data.Address = data.Address ?? "";
+
+            if(!ModelState.IsValid)
+            {
+                return View("Edit",data);
+            }
+
+            if (data.CustomerId == 0)
             {
                 CommonDataService.AddCustomer(data);
             }
