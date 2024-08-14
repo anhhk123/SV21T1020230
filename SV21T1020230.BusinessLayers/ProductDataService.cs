@@ -104,10 +104,33 @@ namespace SV21T1020230.BusinessLayers
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static long AddPhoto(ProductPhoto data)
+        public static long AddProductPhoto(ProductPhoto data)
         {
 
             return productDB.AddPhoto(data);
+        }
+        /// <summary>
+        /// Cập nhật ảnh sản phẩm
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool UpdateProductPhoto(ProductPhoto data)
+        {
+
+            return productDB.UpdatePhoto(data);
+        }
+        /// <summary>
+        /// Lấy ra thôn tin ảnh mặt hang bằng id
+        /// </summary>
+        /// <param name="photoId"></param>
+        /// <returns></returns>
+        public static ProductPhoto GetProductPhoto(int photoId)
+        {
+            return productDB.GetPhoto(photoId);
+        }
+        public static bool DeleteProductPhoto(int photoId)
+        {
+            return productDB.DeletePhoto(photoId);
         }
         /// <summary>
         /// Xóa mặt hàng

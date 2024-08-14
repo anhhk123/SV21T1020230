@@ -121,18 +121,18 @@ namespace SV21T1020230.DataLayers.SQLSever
 
             using (var connection = OpenConnection())
             {
-                var sql = @"INSERT INTO ProductPhotos(ProductID, Photo)
-                            VALUES(@ProductID, @Photo);
-                           SELECT CAST(SCOPE_IDENTITY() AS bigint)";
+                var sql = @"INSERT INTO ProductPhotos(ProductID, Photo,Description,DisplayOrder,IsHidden)
+                            VALUES(@ProductID, @Photo,@Description,@DisplayOrder,@IsHidden);
+                           select @@Identity";
                 var parameters = new
                 {
                     ProductID = data.ProductId,
-                    Photo = data.Photo
+                    Photo = data.Photo ?? "",
+                    Description = data.Description ?? "",
+                    DisplayOrder = data.DisplayOrder,
+                    IsHidden = data.IsHidden
                 };
-                int tempId = connection.ExecuteScalar<int>(sql: sql, param: parameters, commandType: CommandType.Text);
-
-                // Chuyển đổi kiểu int sang long
-                id = (long)tempId;
+                id = connection.ExecuteScalar<long>(sql: sql, param: parameters, commandType: CommandType.Text);
                 connection.Close();
             }
             return id;

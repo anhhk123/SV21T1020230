@@ -74,19 +74,105 @@ namespace SV21T1020230.Web.Controllers
             switch (method)
             {
                 case "add":
-                    ViewBag.Title = "Bổ sung ảnh cho mặt hàng";
-                    return View();
+                    {
+                        ViewBag.Title = "Bổ sung ảnh cho mặt hàng";
+                        ProductPhoto productPhoTo = new ProductPhoto()
+                        {
+                            ProductId = id,
+                            PhotoId = 0
+                        };
+                        return View(productPhoTo);
+                    }
                 case "edit":
-                    ViewBag.Title = "Thay đổi ảnh cho mặt hàng";
-                    return View();
+                    ViewBag.Title = "Thay đổi ảnh mặt hàng";
+                    ProductPhoto productPhoto = ProductDataService.GetProductPhoto(idPhoto);
+                    return View(productPhoto);
                 case "delete":
-                    ViewBag.Title = "Xóa ảnh mặt hàng";
-                    return RedirectToAction("Edit", new {id = id});
+                    {
+                        var photoPath = ProductDataService.GetProductPhoto(idPhoto)?.Photo;
+                        if (!string.IsNullOrEmpty(photoPath))
+                        {
+                            //Lấy đường dẫn thư mục lưu tệp
+                            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ProductPhoto");
+                            //Kết hợp lại để tạo một đường dẫn đầy đủ
+                            var filePath = Path.Combine(uploadsFolder, photoPath);
+                            //kiểm tra xem đường dẫn đó có tồn tại file ảnh không
+                            if (System.IO.File.Exists(filePath))
+                            {
+                                //thực hiện xoá ảnh nếu tồn tại
+                                System.IO.File.Delete(filePath);
+                            }
+                        }
+                        ProductDataService.DeleteProductPhoto(idPhoto);
+                        return RedirectToAction("Edit", new { id = id });
+                    }
                 default:
                     return RedirectToAction("Index");
             }
-            
-            
+        }
+        [HttpPost]
+        public IActionResult SavePhoto(ProductPhoto productPhoto, IFormFile uploadPhoto)
+        {
+            var data = Request.Form;
+            productPhoto = new ProductPhoto()
+            {
+                ProductId = Convert.ToInt32(data["ProductID"]),
+                PhotoId = Convert.ToInt32(data["PhotoID"]),
+                Photo = data["Photo"],
+                Description = data["Description"],
+                DisplayOrder = Convert.ToInt32(data["DisplayOrder"]),
+                IsHidden = Convert.ToBoolean(data["IsHidden"])
+            };
+            ViewBag.Title = productPhoto.PhotoId == 0 ? "Bổ sung ảnh cho mặt hàng" : "Thay đổi ảnh mặt hàng";
+            if (string.IsNullOrEmpty(productPhoto.Description))
+            {
+                ModelState.AddModelError(nameof(productPhoto.Description), "Hãy nhập mô tả ảnh mặt hàng!");
+            }
+            if (productPhoto.DisplayOrder == 0)
+            {
+                ModelState.AddModelError(nameof(productPhoto.DisplayOrder), "Hãy nhập thứ tự ảnh mặt hàng!");
+            }
+            if (uploadPhoto == null && string.IsNullOrEmpty(productPhoto.Photo))
+            {
+                ModelState.AddModelError(nameof(productPhoto.Photo), "Hãy chọn ảnh mặt hàng!");
+            }
+            if (ModelState.IsValid == false)
+            {
+                return View("Photo", productPhoto);
+            }
+            if (uploadPhoto != null && uploadPhoto.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/Product");
+                if (!string.IsNullOrEmpty(productPhoto.Photo))
+                {
+                    var filePathDel = Path.Combine(uploadsFolder, productPhoto.Photo);
+                    if (System.IO.File.Exists(filePathDel))
+                    {
+                        System.IO.File.Delete(filePathDel);
+                    }
+                }
+
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + uploadPhoto.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    uploadPhoto.CopyTo(fileStream);
+                }
+                productPhoto.Photo = uniqueFileName;
+            }
+            if (productPhoto.PhotoId == 0)
+            {
+                ProductDataService.AddProductPhoto(productPhoto);
+            }
+            if (productPhoto.PhotoId > 0)
+            {
+                ProductDataService.UpdateProductPhoto(productPhoto);
+            }
+            return RedirectToAction("Edit", new { id = productPhoto.ProductId });
         }
         public IActionResult Attribute(int id = 0, string method = "", int attributeId = 0, ProductAttribute productAttribute = null )
         {
