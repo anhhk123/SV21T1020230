@@ -60,7 +60,7 @@ namespace SV21T1020230.Web.Controllers
             {
                 RedirectToAction("Index");
             }
-            ViewBag.Allow.Delete = !CommonDataService.InUsed(id);
+            ViewBag.AllowDelete = !CommonDataService.InUsed(id);
             return View(customer);
         }
         [HttpPost]

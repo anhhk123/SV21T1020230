@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SV21T1020230.BusinessLayers;
 using SV21T1020230.DomainModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SV21T1020230.Web.Controllers
 {
@@ -58,15 +59,31 @@ namespace SV21T1020230.Web.Controllers
             return View(supplier);
         }
         [HttpPost]
-        public IActionResult Save(Supplier supplier)
+        public IActionResult Save(Supplier data)
         {
-            if (supplier.SupplierID == 0)
+            ViewBag.Title = data.SupplierID == 0 ? "Bổ sung nhà cung cấp" : "Cập nhật nhà cung cấp";
+            if (string.IsNullOrEmpty(data.SupplierName))
+                ModelState.AddModelError(nameof(data.SupplierName), "Tên nhà cung cấp không được để trống");
+            if (string.IsNullOrEmpty(data.Email))
+                ModelState.AddModelError(nameof(data.Email), "Email không được để trống");
+            if (string.IsNullOrEmpty(data.Address))
+                ModelState.AddModelError(nameof(data.Address), "Địa chỉ không được để trống");
+            if (string.IsNullOrEmpty(data.Phone))
+                ModelState.AddModelError(nameof(data.Phone), "Số điện thoại không được để trống");
+            if (string.IsNullOrEmpty(data.Province))
+                ModelState.AddModelError(nameof(data.Province), "Tỉnh thành không được để trống");
+
+            if(!ModelState.IsValid)
             {
-                CommonDataService.AddSupplier(supplier);
+                return View("Edit", data);
+            }
+            if (data.SupplierID == 0)
+            {
+                CommonDataService.AddSupplier(data);
             }
             else
             {
-                CommonDataService.UpdateSupplier(supplier);
+                CommonDataService.UpdateSupplier(data);
             }
             return RedirectToAction("Index");
         }

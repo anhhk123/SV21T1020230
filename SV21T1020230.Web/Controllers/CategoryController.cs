@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SV21T1020230.BusinessLayers;
 using SV21T1020230.DomainModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SV21T1020230.Web.Controllers
 {
@@ -69,17 +70,31 @@ namespace SV21T1020230.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Save(Category category)
+        public IActionResult Save(Category data)
         {
-            if (category.CategoryId == 0)
+            ViewBag.Title = data.CategoryId == 0 ? "Bổ sung loại hàng" : "Cập nhật thông tin loại hàng";
+            if (string.IsNullOrEmpty(data.CategoryName))
+                ModelState.AddModelError(nameof(data.CategoryName), "Tên loại hàng không được để trống");
+            data.Description = data.Description ?? "";
+            if (!ModelState.IsValid)
             {
-                CommonDataService.AddCategory(category);
+                return View("Edit", data);
+            }
+
+            //TODO:Ktra dữ liệu đầu vào có hợp lệ hay không
+            if (data.CategoryId == 0)
+            {
+                CommonDataService.AddCategory(data);
+                return RedirectToAction("Index");
             }
             else
             {
-                CommonDataService.UpdateCategory(category);
+                CommonDataService.UpdateCategory(data);
+
             }
             return RedirectToAction("Index");
+
+            
         }
     }
 }

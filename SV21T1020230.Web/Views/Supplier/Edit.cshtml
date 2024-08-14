@@ -7,6 +7,7 @@
             <div class="form-group">
                 <label>Tên nhà cung cấp</label>
                 <input type="text" class="form-control" autofocus name="@nameof(Model.SupplierName)" value="@Model.SupplierName">
+                @Html.ValidationMessage(nameof(Model.SupplierName))
             </div>
             <div class="form-group">
                 <label>Tên liên hệ</label>
@@ -15,14 +16,17 @@
             <div class="form-group">
                 <label>Email</label>
                 <input type="text" class="form-control" name="@nameof(Model.Email)" value="@Model.Email">
+                @Html.ValidationMessage(nameof(Model.Email))
             </div>
             <div class="form-group">
                 <label>Địa chỉ</label>
                 <input type="text" class="form-control" name="@nameof(Model.Address)" value="@Model.Address">
+                @Html.ValidationMessage(nameof(Model.Address))
             </div>
             <div class="form-group">
                 <label>Số điện thoại</label>
                 <input type="text" class="form-control" name="@nameof(Model.Phone)" value="@Model.Phone">
+                @Html.ValidationMessage(nameof(Model.Phone))
             </div>
             <div class="form-group">
                 <label>Tỉnh thành</label>
@@ -40,6 +44,8 @@
                         }
                     }
                 </select>
+                @Html.ValidationMessage(nameof(Model.Province))
+
             </div>
             
             <div class="form-group text-right">

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SV21T1020230.BusinessLayers;
 using SV21T1020230.DomainModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SV21T1020230.Web.Controllers
 {
@@ -28,7 +29,9 @@ namespace SV21T1020230.Web.Controllers
             Employee employee = new Employee()
             {
                 EmployeeID = 0,
-                IsWorking = false
+                IsWorking = false,
+                BirthDate = DateTime.Now,
+                
             };
             return View("Edit", employee);
         }
@@ -58,17 +61,30 @@ namespace SV21T1020230.Web.Controllers
 
             return View(employee);
         }
-        public IActionResult Save(Employee employee)
+        public IActionResult Save(Employee data)
         {
-            // TODO: Validate information of employee
-            if (employee.EmployeeID == 0)
+            ViewBag.Title = data.EmployeeID == 0 ? "Bổ sung nhân viên" : "Cập nhật thông tin nhân viên";
+            if (string.IsNullOrEmpty(data.FullName))
+                ModelState.AddModelError(nameof(data.FullName), "Tên nhân viên không được để trống");
+            
+            if (string.IsNullOrEmpty(data.Address))
+                ModelState.AddModelError(nameof(data.Address), "Địa chỉ  không được để trống");
+            if (string.IsNullOrEmpty(data.Phone))
+                ModelState.AddModelError(nameof(data.Phone), "Số điện thoại viên không được để trống");
+
+            if (!ModelState.IsValid)
             {
-                CommonDataService.AddEmployee(employee);
+                return View("edit", data);
+            }
+            // TODO: Validate information of employee
+            if (data.EmployeeID == 0)
+            {
+                CommonDataService.AddEmployee(data);
             }
             else
             {
                 
-                CommonDataService.UpdateEmployee(employee);
+                CommonDataService.UpdateEmployee(data);
             }
             return RedirectToAction("Index");
         }

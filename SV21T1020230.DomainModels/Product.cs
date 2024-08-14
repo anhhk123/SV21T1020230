@@ -13,7 +13,7 @@ namespace SV21T1020230.DomainModels
         public string ProductDescription { get; set; }
         public int SupplierID { get; set; }
         public int CategoryID { get; set; }
-        public int Unit { get; set; }
+        public string Unit { get; set; }
         public decimal Price { get; set; }
         public string Photo { get; set; }
         public bool IsSelling { get; set; }

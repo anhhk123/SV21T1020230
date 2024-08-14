@@ -9,6 +9,7 @@
                 <label class="control-label col-sm-2">Họ và tên:</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="@nameof(Model.FullName)" value="@Model.FullName" />
+                    @Html.ValidationMessage(nameof(Model.FullName))
                 </div>
             </div>
 
@@ -23,6 +24,7 @@
                 <label class="control-label col-sm-2">Địa chỉ:</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="@nameof(Model.Address)" value="@Model.Address"  />
+                    @Html.ValidationMessage(nameof(Model.Address))
                 </div>
             </div>
 
@@ -30,6 +32,7 @@
                 <label class="control-label col-sm-2">Điện thoại:</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="@nameof(Model.Phone)" value="@Model.Phone" />
+                    @Html.ValidationMessage(nameof(Model.Phone))
                 </div>
             </div>
 

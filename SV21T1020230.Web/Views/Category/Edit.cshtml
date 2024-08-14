@@ -12,6 +12,7 @@
             <div class="form-group">
                 <label>Tên danh mục</label>
                 <input type="text" class="form-control" autofocus name="@nameof(Model.CategoryName)" value="@Model.CategoryName">
+                @Html.ValidationMessage(nameof(Model.CategoryName))
             </div>
             <div class="form-group">
                 <label>Chi tiết</label>

@@ -2,6 +2,7 @@
 using SV21T1020230.BusinessLayers;
 using SV21T1020230.DomainModels;
 using System.Buffers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SV21T1020230.Web.Controllers
 {
@@ -60,15 +61,25 @@ namespace SV21T1020230.Web.Controllers
             return View(shipper);
         }
         [HttpPost]
-        public IActionResult Save(Shipper shipper)
+        public IActionResult Save(Shipper data)
         {
-            if (shipper.ShipperID == 0)
+            ViewBag.Title = data.ShipperID == 0 ? "Bổ sung người giao hàng" : "Cập nhật thông tin giao hàng";
+            if (string.IsNullOrEmpty(data.ShipperName))
+                ModelState.AddModelError(nameof(data.ShipperName), "Tên giao hàng không được để trống");
+            if (string.IsNullOrEmpty(data.Phone))
+                ModelState.AddModelError(nameof(data.Phone), "Số điện thoại  không được để trống");
+
+            if(!ModelState.IsValid)
             {
-                CommonDataService.AddShipper(shipper);
+                return View("Edit",data);
+            }
+            if (data.ShipperID == 0)
+            {
+                CommonDataService.AddShipper(data);
             }
             else
             {
-                CommonDataService.UpdateShipper(shipper);
+                CommonDataService.UpdateShipper(data);
             }
             return RedirectToAction("Index");
         }

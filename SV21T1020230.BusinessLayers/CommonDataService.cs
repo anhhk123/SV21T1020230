@@ -27,7 +27,7 @@ namespace SV21T1020230.BusinessLayers
             employeeDB = new EmployeeDAL(Configuration.ConnectionString);
             categoryDB = new CategoryDAL(Configuration.ConnectionString);
             shipperDB = new ShipperDAL(Configuration.ConnectionString);
-            productDB = new ProductDAL(Configuration.ConnectionString);
+            
         }
         public static List<Province> ListOfProvinces()
         {
@@ -116,6 +116,13 @@ namespace SV21T1020230.BusinessLayers
             return supplierDB.List(page, pageSize, searchvalue).ToList();
 
         }
+        public static List<Supplier> ListOfSuppliers()
+        {
+            
+            return supplierDB.List().ToList();
+
+        }
+
         /// <summary>
         /// Lấy ra danh sách employee
         /// </summary>
@@ -285,6 +292,11 @@ namespace SV21T1020230.BusinessLayers
         {
             rowCount = categoryDB.Count(searchValue);
             return categoryDB.List(page, pageSize, searchValue).ToList();
+        }
+        public static List<Category> ListAllCategories()
+        {
+            
+            return categoryDB.List().ToList();
         }
         /// <summary>
         /// Lấy ra một loại hàng bằng id loại hàng

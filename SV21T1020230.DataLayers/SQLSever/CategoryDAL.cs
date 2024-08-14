@@ -115,7 +115,13 @@ namespace SV21T1020230.DataLayers.SQLSever
             }
             return result;
         }
-
+        /// <summary>
+        /// danh sách category nếu truyền tham số thì có phân trang tìm kiếm nếu ko có tìm lấy hết
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="searchValue"></param>
+        /// <returns></returns>
         public IList<Category> List(int page = 1, int pageSize = 0, string searchValue = "")
         {
             List<Category> result = new List<Category>();
