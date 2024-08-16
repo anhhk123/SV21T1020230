@@ -8,42 +8,40 @@ namespace SV21T1020230.Web.Controllers
 {
     public class EmployeeController : Controller
     {
-        private const int PAGE_SIZE = 10;
-        private const string SEARCH_CONDITION = "employee_search";
+        const int PAGE_SIZE = 9;
+        private const string SEARCH_CONDITION = "employee_search"; //Tên biến dùng để lưu trong session
 
-        public IActionResult Index(int page = 1, int pageSize = 10, string searchValue = "")
+        public IActionResult Index(int page = 1, string searchValue = "")
         {
             PaginationSearchInput? input = ApplicationContext.GetSessionData<PaginationSearchInput>(SEARCH_CONDITION);
-            if(input == null)
+            if (input == null)
             {
                 input = new PaginationSearchInput()
                 {
                     Page = 1,
                     PageSize = PAGE_SIZE,
-                    SearchValue = ""
+                    SearchValue = searchValue
                 };
-
             }
             return View(input);
-
-            
         }
+
         public IActionResult Search(PaginationSearchInput input)
         {
             int rowCount = 0;
-            var data = CommonDataService.ListofEmployees(out rowCount, input.Page, input.PageSize, input.SearchValue);
+            var data = CommonDataService.ListofEmployees(out rowCount, input.Page, input.PageSize, input.SearchValue ?? "");
             var model = new EmployeeSearchResult()
             {
                 Page = input.Page,
                 PageSize = input.PageSize,
-                SearchValue = input.SearchValue,
+                SearchValue = input.SearchValue ?? "",
                 RowCount = rowCount,
                 data = data
             };
             ApplicationContext.SetSessionData(SEARCH_CONDITION, input);
             return View(model);
         }
-            public IActionResult Create()
+        public IActionResult Create()
         {
             ViewBag.Title = "Thêm nhân viên";
             Employee employee = new Employee()
