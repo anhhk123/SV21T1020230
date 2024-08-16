@@ -3,12 +3,14 @@ using System.Security.Cryptography.Pkcs;
 
 namespace SV21T1020230.Web.Models
 {
-    public class PaginationSearchResult
+    public class PaginationSearchResult<T>
     {
         public int Page { get; set; }
         public int PageSize { get; set; }
         public string SearchValue { get; set; }
         public int RowCount { get; set; }
+        public required List<T> data { get; set; }
+
 
         public int PageCount
         {
@@ -29,16 +31,21 @@ namespace SV21T1020230.Web.Models
     /// Kết quả tìm kiếm khách hàng 
     /// </summary>
 
-    public class CustomerSearchResult : PaginationSearchResult
+    public class CustomerSearchResult : PaginationSearchResult<Customer>
     {
-        public required List<Customer> data { get; set; }
+
     }
-    public class ProductSearchResult : PaginationSearchResult
+    
+    public class EmployeeSearchResult : PaginationSearchResult<Employee>
     {
-        public required List<Product> data { get; set; }
     }
-    public class EmployeeSearchResult : PaginationSearchResult
+    public class ProductSearchResult : PaginationSearchResult<Product>
     {
-        public required List<Employee> data { get; set; }
+        public int CategoryID { get; set; }
+        public int SupplierID { get; set; }
+        public int MinPrice { get; set; }
+        public int MaxPrice { get; set; }
+        public List<Category> Categories { get; set; } = new List<Category>();
+        public List<Supplier> Suppliers { get; set; } = new List<Supplier>();
     }
 }

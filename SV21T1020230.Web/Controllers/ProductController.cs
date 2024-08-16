@@ -10,31 +10,145 @@ namespace SV21T1020230.Web.Controllers
 {
     public class ProductController : Controller
     {
-        const int PAGE_SZE = 20;
-        public IActionResult Index(int page = 1, string searchValue = "", int CategoryID = 0, int SupplierID = 0, decimal MinPrice = 0, decimal MaxPrice = 0)
+        const int PAGE_SIZE = 20;
+        public IActionResult Index(int page = 1, int categoryID = 0, int supplierID = 0, int minPrice = 0, int maxPrice = 0, string searchValue = "")
         {
-            int rowCount = 0;
-            List<Product> products =   ProductDataService.ListProducts(out rowCount, page,PAGE_SZE,searchValue,CategoryID, supplierId : SupplierID, minPrice : MinPrice, maxPrice: MaxPrice);
-            ProductSearchResult productSearchResult = new ProductSearchResult
+            Console.WriteLine("Pasing line 13 in method index");
+            int rowCount = 0, tempRowCount = 0;
+            List<Product> products = ProductDataService.ListProducts(out rowCount, page, PAGE_SIZE, searchValue, categoryID, supplierID, minPrice, maxPrice);
+            var model = new ProductSearchResult
             {
+                data = products,
                 Page = page,
+                CategoryID = categoryID,
+                SupplierID = supplierID,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice,
+                PageSize = PAGE_SIZE,
                 RowCount = rowCount,
                 SearchValue = searchValue,
-                PageSize = PAGE_SZE,
-                data = products
+                Categories = CommonDataService.ListOfCategories(out tempRowCount, 1, 0, ""),
+                Suppliers = CommonDataService.ListOfSuppliers(out tempRowCount, 1, 0, "")
             };
-            return View(productSearchResult);
+            return View(model);
         }
+
         public IActionResult Create()
         {
-            ViewBag.Title = "Thêm mới sản phẩm";
-            Product product = new Product()
+            ViewBag.Title = "Thêm sản phẩm";
+            int temp = 0;
+            var lstCategory = CommonDataService.ListOfCategories(out temp, 1, 0, "");
+            var lstSupplier = CommonDataService.ListOfSuppliers(out temp, 1, 0, "");
+
+            var productDetail = new ProductDetail()
             {
-                ProductId = 0
+                Categories = lstCategory ?? new List<Category>(),
+                Suppliers = lstSupplier ?? new List<Supplier>(),
+                Product = new Product()
             };
-            return View("Edit", product);
+            return View("Edit", productDetail);
         }
-        
+
+        public IActionResult Edit(int id = 0)
+        {
+            ViewBag.Title = "Chỉnh sửa sản phẩm";
+
+            var product = ProductDataService.GetProductById(id);
+            if (product == null)
+            {
+                return View("Index");
+            }
+
+            int temp = 0;
+            var lstPhoto = ProductDataService.ListOfProductPhotos(id);
+            var lstAttribute = ProductDataService.ListOfProductAttributes(id);
+            var lstCategory = CommonDataService.ListOfCategories(out temp, 1, 0, "");
+            var lstSupplier = CommonDataService.ListOfSuppliers(out temp, 1, 0, "");
+
+            var productDetail = new ProductDetail()
+            {
+                Photos = lstPhoto ?? new List<ProductPhoto>(),
+                Attributes = lstAttribute ?? new List<ProductAttribute>(),
+                Categories = lstCategory ?? new List<Category>(),
+                Suppliers = lstSupplier ?? new List<Supplier>(),
+                Product = product
+            };
+
+            return View(productDetail);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Save(Product product, IFormFile uploadPhoto)
+        {
+            Console.WriteLine(product.Price);
+            Console.WriteLine(product.SupplierID);
+            Console.WriteLine(product.CategoryID);
+
+            ViewBag.Title = (product.ProductId == 0) ? "Thêm sản phẩm" : "Chỉnh sửa sản phẩm";
+
+            if (string.IsNullOrEmpty(product.ProductName))
+                ModelState.AddModelError(nameof(product.ProductName), "Tên sản phẩm không được để trống");
+            if (product.CategoryID == 0)
+                ModelState.AddModelError(nameof(product.CategoryID), "Vui lòng chọn loại sản phẩm");
+            if (product.SupplierID == 0)
+                ModelState.AddModelError(nameof(product.SupplierID), "Vui lòng chọn nhà cung cấp");
+
+            product.Photo = product.Photo ?? "";
+            product.Unit = product.Unit ?? "";
+
+            int temp = 0;
+            var lstPhoto = ProductDataService.ListOfProductPhotos(product.ProductId);
+            var lstAttribute = ProductDataService.ListOfProductAttributes(product.ProductId);
+            var lstCategory = CommonDataService.ListOfCategories(out temp, 1, 0, "");
+            var lstSupplier = CommonDataService.ListOfSuppliers(out temp, 1, 0, "");
+            var productDetail = new ProductDetail()
+            {
+                Photos = lstPhoto ?? new List<ProductPhoto>(),
+                Attributes = lstAttribute ?? new List<ProductAttribute>(),
+                Categories = lstCategory ?? new List<Category>(),
+                Suppliers = lstSupplier ?? new List<Supplier>(),
+                Product = product
+            };
+
+            if (!ModelState.IsValid)
+            {
+                return View("Edit", productDetail);
+            }
+
+            if (product.ProductId == 0)
+            {
+                product.ProductId = ProductDataService.AddProduct(product);
+            }
+
+
+            if (uploadPhoto != null && uploadPhoto.ContentType.Contains("image"))
+            {
+                var fileName = Path.GetFileName(product.ProductId.ToString() + Path.GetExtension(uploadPhoto.FileName));
+                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/products");
+
+                // Kiểm tra và tạo thư mục nếu chưa tồn tại
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                var filePath = Path.Combine(directoryPath, fileName);
+                Console.WriteLine(fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadPhoto.CopyToAsync(stream);
+                }
+
+                product.Photo = $"/images/products/{fileName}";
+            }
+
+
+            ProductDataService.UpdateProduct(product);
+
+            return RedirectToAction("Index");
+        }
+
         public IActionResult Delete(int id = 0)
         {
             if (Request.Method == "POST")
@@ -43,239 +157,149 @@ namespace SV21T1020230.Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            Product product = ProductDataService.GetProductById(id);
-            if(product == null)
-            {
-                
-                return RedirectToAction("Index");
-            }
-            ViewBag.AllowDelete = ProductDataService.InUsed(id);
-            return View(product);
+            Product? product = ProductDataService.GetProductById(id);
 
-
-
-         }
-
-        
-        public IActionResult Edit(int id = 0)
-        {
-
-            ViewBag.Title = "Cập nhật mặt hàng";
-            Product product = ProductDataService.GetProductById(id);
-            if(product == null)
+            if (product == null)
             {
                 return RedirectToAction("Index");
             }
+
+            ViewBag.AllowDelete = true;
+            if (ProductDataService.IsUsed(id))
+            {
+                ViewBag.AllowDelete = false;
+            }
             return View(product);
         }
-        public IActionResult Photo(int id =0 , string method ="", int idPhoto = 0)
-        {
 
+        public IActionResult Photo(int id = 0, string method = "", int photoId = 0)
+        {
             switch (method)
             {
                 case "add":
+                    ViewBag.Title = "Bổ sung ảnh cho mặt hàng";
+                    ProductPhoto photo = new ProductPhoto
                     {
-                        ViewBag.Title = "Bổ sung ảnh cho mặt hàng";
-                        ProductPhoto productPhoTo = new ProductPhoto()
-                        {
-                            ProductId = id,
-                            PhotoId = 0
-                        };
-                        return View(productPhoTo);
-                    }
-                case "edit":
-                    ViewBag.Title = "Thay đổi ảnh mặt hàng";
-                    ProductPhoto productPhoto = ProductDataService.GetProductPhoto(idPhoto);
-                    return View(productPhoto);
-                case "delete":
-                    {
-                        var photoPath = ProductDataService.GetProductPhoto(idPhoto)?.Photo;
-                        if (!string.IsNullOrEmpty(photoPath))
-                        {
-                            //Lấy đường dẫn thư mục lưu tệp
-                            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ProductPhoto");
-                            //Kết hợp lại để tạo một đường dẫn đầy đủ
-                            var filePath = Path.Combine(uploadsFolder, photoPath);
-                            //kiểm tra xem đường dẫn đó có tồn tại file ảnh không
-                            if (System.IO.File.Exists(filePath))
-                            {
-                                //thực hiện xoá ảnh nếu tồn tại
-                                System.IO.File.Delete(filePath);
-                            }
-                        }
-                        ProductDataService.DeleteProductPhoto(idPhoto);
-                        return RedirectToAction("Edit", new { id = id });
-                    }
-                default:
-                    return RedirectToAction("Index");
-            }
-        }
-        [HttpPost]
-        public IActionResult SavePhoto(ProductPhoto productPhoto, IFormFile uploadPhoto)
-        {
-            var data = Request.Form;
-            productPhoto = new ProductPhoto()
-            {
-                ProductId = Convert.ToInt32(data["ProductID"]),
-                PhotoId = Convert.ToInt32(data["PhotoID"]),
-                Photo = data["Photo"],
-                Description = data["Description"],
-                DisplayOrder = Convert.ToInt32(data["DisplayOrder"]),
-                IsHidden = Convert.ToBoolean(data["IsHidden"])
-            };
-            ViewBag.Title = productPhoto.PhotoId == 0 ? "Bổ sung ảnh cho mặt hàng" : "Thay đổi ảnh mặt hàng";
-            if (string.IsNullOrEmpty(productPhoto.Description))
-            {
-                ModelState.AddModelError(nameof(productPhoto.Description), "Hãy nhập mô tả ảnh mặt hàng!");
-            }
-            if (productPhoto.DisplayOrder == 0)
-            {
-                ModelState.AddModelError(nameof(productPhoto.DisplayOrder), "Hãy nhập thứ tự ảnh mặt hàng!");
-            }
-            if (uploadPhoto == null && string.IsNullOrEmpty(productPhoto.Photo))
-            {
-                ModelState.AddModelError(nameof(productPhoto.Photo), "Hãy chọn ảnh mặt hàng!");
-            }
-            if (ModelState.IsValid == false)
-            {
-                return View("Photo", productPhoto);
-            }
-            if (uploadPhoto != null && uploadPhoto.Length > 0)
-            {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/Product");
-                if (!string.IsNullOrEmpty(productPhoto.Photo))
-                {
-                    var filePathDel = Path.Combine(uploadsFolder, productPhoto.Photo);
-                    if (System.IO.File.Exists(filePathDel))
-                    {
-                        System.IO.File.Delete(filePathDel);
-                    }
-                }
-
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + uploadPhoto.FileName;
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    uploadPhoto.CopyTo(fileStream);
-                }
-                productPhoto.Photo = uniqueFileName;
-            }
-            if (productPhoto.PhotoId == 0)
-            {
-                ProductDataService.AddProductPhoto(productPhoto);
-            }
-            if (productPhoto.PhotoId > 0)
-            {
-                ProductDataService.UpdateProductPhoto(productPhoto);
-            }
-            return RedirectToAction("Edit", new { id = productPhoto.ProductId });
-        }
-        public IActionResult Attribute(int id = 0, string method = "", int attributeId = 0, ProductAttribute productAttribute = null )
-        {
-
-            switch (method)
-            {
-                case "add":
-                    ViewBag.Title = "Bổ sung thuộc tính cho mặt hàng";
-                    ViewBag.Method = "add";
-                    if (Request.Method == "POST" && productAttribute != null)
-                    {
-                        productAttribute.Productid = id;
-                        ProductDataService.AddAttribute(productAttribute);
-                        return RedirectToAction("Edit", new { id = id });
-                    }
-                    ProductAttribute pa = new ProductAttribute()
-                    {
-                        Productid = id,
-                        AttributeId = 0
+                        ProductId = id,
+                        PhotoId = 0,
+                        Description = "",
+                        DisplayOrder = 100,
+                        IsHidden = false,
+                        Photo = ""
                     };
-                    
-                    return View(pa);
+                    return View(photo);
                 case "edit":
-                    ViewBag.Title = "Thay đổi thuộc tính của  mặt hàng";
-                    ViewBag.Method = "edit";
-                    if (Request.Method == "POST")
-                    {
-                        ProductDataService.UpdateAttribute(productAttribute);
-                        return RedirectToAction("Edit", new {id=productAttribute.Productid});
-                    }
-                    ProductAttribute result = null;
-                    if (attributeId != 0)
-                    {
-                      result  = ProductDataService.GetAttributeById(attributeId);
-                        result.Productid = id;
-                        return View(result);
-                    }
-                    return RedirectToAction("Edit", new {id = id});
-                    
+                    ViewBag.Title = "Thay đổi ảnh của mặt hàng";
+                    ProductPhoto? img = ProductDataService.GetProductPhoto(photoId);
+                    if (img == null) return RedirectToAction("Edit", new { id = id });
+                    return View(img);
                 case "delete":
-                    if(attributeId != 0)
-                    {
-                        ProductDataService.DeleteAttribute(attributeId);
-                    }
+                    ProductDataService.DeleteProductPhoto(photoId);
                     return RedirectToAction("Edit", new { id = id });
                 default:
                     return RedirectToAction("Index");
             }
-
-
         }
 
+        public IActionResult Attribute(int id = 0, string method = "", int attributeId = 0)
+        {
+            switch (method)
+            {
+                case "add":
+                    ViewBag.Title = "Bổ sung thuộc tính cho mặt hàng";
+                    var modelAdd = new ProductAttribute
+                    {
+                        AttributeId = 0,
+                        AttributeValue = "",
+                        DisplayOrder = 0,
+                        AttributeName = "",
+                        ProductId = id
+                    };
+                    return View(modelAdd);
+                case "edit":
+                    ViewBag.Title = "Thay đổi thuộc tính của mặt hàng";
+                    var modelEdit = ProductDataService.GetAttributeById(attributeId);
+                    if (modelEdit == null) return RedirectToAction("Edit", new { id = id });
+                    return View(modelEdit);
+                case "delete":
+                    ProductDataService.DeleteAttribute(attributeId);
+                    return RedirectToAction("Edit", new { id = id });
+                default:
+                    return RedirectToAction("Index");
+            }
+        }
 
         [HttpPost]
-        public IActionResult Save(Product data, IFormFile uploadPhoto)
+        public async Task<IActionResult> SavePhoto(ProductPhoto productPhoto, IFormFile uploadPhoto)
         {
-            ViewBag.Title = data.ProductId == 0 ? "Bổ sung sản phẩm" : "Cập nhật thông tin sản phẩm";
-            if (string.IsNullOrEmpty(data.ProductName))
-                ModelState.AddModelError(nameof(data.ProductName), "Tên sản phẩm không được để trống");
-            if (string.IsNullOrEmpty(data.Unit))
-                ModelState.AddModelError(nameof(data.Unit), "Đơn vị tính không được để trống");
-            if (data.Price <= 0)
-            {
-                ModelState.AddModelError(nameof(data.Price), "Giá tiền không được để trống hoặc không hợp lệ");
-            }
-            if (uploadPhoto == null || string.IsNullOrEmpty(data.Photo))
-            {
-                ModelState.AddModelError(nameof(data.Photo), "Hãy chọn ảnh cho mặt hàng");
-            }
-            data.IsSelling = data.IsSelling;
-            data.ProductDescription = data.ProductDescription ?? "";
-            data.SupplierID = data.SupplierID;
-            data.CategoryID = data.CategoryID;
+            ViewBag.Title = (productPhoto.PhotoId == 0) ? "Thêm ảnh" : "Chỉnh sửa ảnh";
 
+            if (productPhoto.Equals("") && (uploadPhoto == null || !uploadPhoto.ContentType.Contains("image")))
+                ModelState.AddModelError(nameof(productPhoto.Photo), "Chưa có ảnh hoặc ảnh không hợp lệ");
 
             if (!ModelState.IsValid)
             {
-                return View("Edit", data);
+                if (productPhoto.PhotoId == 0)
+                {
+                    return RedirectToAction("Photo", new { id = productPhoto.ProductId, method = "add", photoId = 0 });
+                }
+                else
+                {
+                    return RedirectToAction("Photo", new { id = productPhoto.ProductId, method = "edit", photoId = productPhoto.PhotoId });
+                }
             }
-            if (uploadPhoto != null && uploadPhoto.Length > 0)
+
+            productPhoto.Photo = productPhoto.Photo ?? "";
+            productPhoto.Description = productPhoto.Description ?? "";
+
+            if (productPhoto.PhotoId == 0)
             {
-                var fileName = Path.GetFileName(uploadPhoto.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/Product", fileName);
+                productPhoto.PhotoId = ProductDataService.AddProductPhoto(productPhoto);
+            }
+
+            if (uploadPhoto != null && uploadPhoto.ContentType.Contains("image"))
+            {
+                var fileName = Path.GetFileName(productPhoto.PhotoId.ToString() + Path.GetExtension(uploadPhoto.FileName));
+                var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/products/img");
+
+                // Kiểm tra và tạo thư mục nếu chưa tồn tại
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                var filePath = Path.Combine(directoryPath, fileName);
+                Console.WriteLine(fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    uploadPhoto.CopyTo(stream);
+                    await uploadPhoto.CopyToAsync(stream);
                 }
-                data.Photo = fileName;
+
+                productPhoto.Photo = $"/images/products/img/{fileName}";
             }
 
-            //TODO:Ktra dữ liệu đầu vào có hợp lệ hay không
-            if (data.ProductId == 0)
-            {
-                ProductDataService.AddProduct(data);
-                return RedirectToAction("Index");
-            }
+
+            ProductDataService.UpdateProductPhoto(productPhoto);
+
+            return RedirectToAction("Edit", new { id = productPhoto.ProductId });
+        }
+
+        [HttpPost]
+        public IActionResult SaveAttribute(ProductAttribute productAttribute)
+        {
+            ViewBag.Title = (productAttribute.AttributeId == 0)
+                ? "Bổ sung thuộc tính cho mặt hàng " : "Chỉnh sửa thuộc tính cho mặt hàng";
+
+            productAttribute.AttributeValue = productAttribute.AttributeValue ?? "";
+            productAttribute.AttributeName = productAttribute.AttributeName ?? "";
+
+            if (productAttribute.AttributeId == 0)
+                ProductDataService.AddAttribute(productAttribute);
             else
-            {
-                ProductDataService.UpdateProduct(data);
+                ProductDataService.UpdateAttribute(productAttribute);
 
-            }
-            return RedirectToAction("Index");
+            return RedirectToAction("Edit", new { id = productAttribute.ProductId });
         }
     }
 }

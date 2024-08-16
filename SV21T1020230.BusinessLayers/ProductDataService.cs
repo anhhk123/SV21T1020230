@@ -147,7 +147,7 @@ namespace SV21T1020230.BusinessLayers
         /// </summary>
         /// <param name="productId"></param>
         /// <returns></returns>
-        public static bool InUsed(int productId)
+        public static bool IsUsed(int productId)
         {
             return productDB.InUsed(productId);
         }

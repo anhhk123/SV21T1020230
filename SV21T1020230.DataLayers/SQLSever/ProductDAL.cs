@@ -96,7 +96,7 @@ namespace SV21T1020230.DataLayers.SQLSever
                             SELECT CAST(SCOPE_IDENTITY() as bigint)";
                 var parameters = new
                 {
-                    ProductID = data.Productid,
+                    ProductID = data.ProductId,
                     AttributeName = data.AttributeName,
                     AttributeValue = data.AttributeValue,
                     DisplayOrder = data.DisplayOrder
