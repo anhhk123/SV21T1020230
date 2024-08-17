@@ -5,9 +5,11 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using SV21T1020230.Web.Models;
 using System.Buffers;
 using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SV21T1020230.Web.Controllers
 {
+    [Authorize(Roles = $"{WebUserRoles.Administrator},{WebUserRoles.Employee}")]
     public class ProductController : Controller
     {
         const int PAGE_SIZE = 20;

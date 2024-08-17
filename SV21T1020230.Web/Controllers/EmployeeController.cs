@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SV21T1020230.BusinessLayers;
 using SV21T1020230.DomainModels;
 using SV21T1020230.Web.Models;
@@ -6,6 +7,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SV21T1020230.Web.Controllers
 {
+    [Authorize(Roles ="admin")]
     public class EmployeeController : Controller
     {
         const int PAGE_SIZE = 9;
