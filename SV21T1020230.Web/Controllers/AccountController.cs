@@ -62,5 +62,48 @@ namespace SV21T1020230.Web.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
+
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult ChangePassword(string oldPassword, string newPassword, string confirmPassword)
+        {
+            
+            if (string.IsNullOrWhiteSpace(oldPassword) || string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+            {
+                ModelState.AddModelError("Error", "Vui lòng điền đầy đủ thông tin.");
+            }
+
+            
+            if (newPassword != confirmPassword)
+            {
+                ModelState.AddModelError("confirmPassword", "Xác nhận mật khẩu không giống với mật khẩu mới.");
+            }
+
+            
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var result = UserAccountService.ChangePassword(User.GetUserData().Email, oldPassword, newPassword);
+            if (result)
+            {
+                ViewBag.ChangePassSuccess = true;
+                return View();
+
+            }
+            else
+            {
+                ModelState.AddModelError("confirmPassword", "Nhập sai mật khẩu cũ");
+                if (!ModelState.IsValid)
+                {
+                    return View();
+                }
+            }
+            return View();
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace SV21T1020230.Web.Controllers
         const int PAGE_SIZE = 20;
         public IActionResult Index(int page = 1, int categoryID = 0, int supplierID = 0, int minPrice = 0, int maxPrice = 0, string searchValue = "")
         {
-            Console.WriteLine("Pasing line 13 in method index");
+            
             int rowCount = 0, tempRowCount = 0;
             List<Product> products = ProductDataService.ListProducts(out rowCount, page, PAGE_SIZE, searchValue, categoryID, supplierID, minPrice, maxPrice);
             var model = new ProductSearchResult

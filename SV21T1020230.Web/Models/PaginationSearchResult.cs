@@ -48,4 +48,9 @@ namespace SV21T1020230.Web.Models
         public List<Category> Categories { get; set; } = new List<Category>();
         public List<Supplier> Suppliers { get; set; } = new List<Supplier>();
     }
+    public class OrderSearchResult : PaginationSearchResult<Order>
+    {
+        public string orderTime { get; set; }
+    }
+
 }

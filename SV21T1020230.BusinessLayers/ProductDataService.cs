@@ -1,7 +1,9 @@
-﻿using SV21T1020230.DataLayers;
+﻿using Azure;
+using SV21T1020230.DataLayers;
 using SV21T1020230.DataLayers.SQLSever;
 using SV21T1020230.DomainModels;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +33,14 @@ namespace SV21T1020230.BusinessLayers
         public static List<Product> ListProducts(out int rowCount,int page = 1, int pageSize = 0, string searchValue = "", int categoryId = 0, int supplierId = 0, decimal minPrice = 0, decimal maxPrice = 0)
         {
             rowCount = productDB.Count(searchValue, categoryId, supplierId, minPrice,maxPrice);
+            return productDB.List(page, pageSize, searchValue, categoryId, supplierId, minPrice, maxPrice).ToList();
+        }
+        /// <summary>
+        /// ListProducts không cần truyền Out RowCount
+        /// </summary>
+        /// <returns></returns>
+        public static List<Product> ListProducts(int page = 1, int pageSize = 0, string searchValue = "", int categoryId = 0, int supplierId = 0, decimal minPrice = 0, decimal maxPrice = 0)
+        {
             return productDB.List(page, pageSize, searchValue, categoryId, supplierId, minPrice, maxPrice).ToList();
         }
         /// <summary>

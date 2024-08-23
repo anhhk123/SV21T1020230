@@ -1,0 +1,100 @@
+﻿@model OrderSearchResult
+<p style="margin:10px 0 10px 0">
+    Có <strong>@Model.data.Count</strong> đơn hàng trong tổng số <strong>@Model.RowCount</strong> trang
+</p>
+<table class="table table-bordered table-hover table-striped">
+    <thead>
+        <tr class="bg-primary">
+            <th>Khách hàng</th>
+            <th>Ngày lập</th>
+
+            <th>Nhân viên phụ trách</th>
+            <th>Thời điểm duyệt</th>
+            <th>Người giao hàng</th>
+            <th>Ngày nhận giao hàng</th>
+            <th>Thời điểm kết thúc</th>
+            <th>Trạng thái</th>
+            <th style="width:40px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.data)
+        {
+            <tr>
+                <td>@item.Customer.CustomerName</td>
+                <td>@item.OrderTime</td>
+                <td>@item.Employee.FullName</td>
+                <td>@item.AcceptTime</td>
+                <td>@item.Shipper.ShipperName</td>
+                <td>@item.ShippedTime</td>
+                <td>@item.FinishedTime</td>
+                <td>@item.Status</td>
+                <td>
+                    <a href="~/Order/Details/@item.OrderID" class="btn btn-info btn-xs">
+                        <i class="glyphicon glyphicon-th-list"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+<div class="text-center">
+
+     <ul class="pagination">
+    @for (int p = 1; p <= Model.PageCount; p++)
+    {
+    if (p == ViewBag.page)
+    {
+                <li class="page-item active"><a class="page-link" href="~/Order?page=@p&orderTime=@Model.orderTime&searchValue=@Model.SearchValue&PageSize=@Model.PageSize"> @p </a></li>
+    }
+    else
+    {
+                <li class="page-item"><a class="page-link" href="~/Order?page=@p&orderTime=@Model.orderTime&searchValue=@Model.SearchValue&PageSize=@Model.PageSize"> @p </a></li>
+    }
+    }
+    </ul>
+</div>
+<div id="pager"></div>
+@section Scripts {
+    <script>
+
+        var pageOnSize = @ViewBag.PageSize;
+        var currentPage = @ViewBag.CurrentPage;
+        $(document).ready(function () {
+            debugger;
+            $("#pager").pagerHistory({
+                pagenumber: currentPage,
+                pagecount: Math.ceil('@ViewBag.TotalPage'),
+                buttonClickCallback: function (page) { bindDataRequest(page); }
+            });
+
+        });
+
+        function bindDataRequest(currentPage) {
+            var param = {
+                Status: $("#ddlStatus").val(),
+                orderTime: $("#txtorderTime").val(),
+                SearchValue: $("#txtsearchValue").val(),
+                Page: currentPage
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: "/Order/ListOrderPartial",
+                data: param,
+                async: true,
+                dataType: "html",
+                // dataType:"json",
+                success: function (rs) {
+                    $("#ListOrderPartial").html("");
+                    $("#ListOrderPartial").html(rs);
+                },
+                error(rs) {
+                    console.log(JSON.stringify(rs));
+                }
+            });
+        };
+
+    </script>
+}
