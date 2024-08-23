@@ -6,4 +6,5 @@
         public int PageSize { get; set; } = 0;
         public string SearchValue { get; set; } = "";
     }
+
 }

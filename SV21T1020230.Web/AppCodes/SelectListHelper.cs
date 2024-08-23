@@ -163,5 +163,49 @@ namespace SV21T1020230.Web
             }
             return list;
         }
+        /// <summary>
+        /// Danh  sách trạng thái đơn hàng
+        /// </summary>
+        /// <returns></returns>
+        public static List<SelectListItem> Status()
+        {
+            List<SelectListItem> list = new List<SelectListItem>();
+            list.Add(new SelectListItem()
+            {
+                Value = "0",
+                Text = "-- Trạng thái --",
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "1",
+                Text = "Đơn hàng mới(chờ duyệt)",
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "2",
+                Text = "Đơn hàng đã duyệt (chờ chuyển hàng)",
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "3",
+                Text = "Đơn hàng đang được giao",
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "4",
+                Text = "Đơn hàng đã hoàn tất thành công",
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "-1",
+                Text = "Đơn hàng bị hủy",
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "-2",
+                Text = "Đơn hàng bị từ chối",
+            });
+            return list;
+        }
     }
 }
