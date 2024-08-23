@@ -49,13 +49,14 @@ namespace SV21T1020230.Web.Controllers
         public IActionResult Details(int id)
         {
             OrderDetail order = OrderDataService.GetOrderById(id);
+            List<ProductInOrderDetail> listProduct = OrderDataService.ListProductInOrders(id);
+            order.ListProductInOrder = listProduct;
             return View(order);
         }
         public IActionResult EditDetail(int id = 0, int idProductId = 0)
-
-
         {
-            return View();
+            var model = null;
+            return View(model);
         }
         public IActionResult Shipping()
         {
@@ -64,6 +65,28 @@ namespace SV21T1020230.Web.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+        public IActionResult Delete(int orderId = 0)
+        {
+            if(orderId != 0)
+            {
+                bool result = OrderDataService.DeleteOrderById(orderId);
+                if (result)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            
+            return View();
+        }
+        public IActionResult DeleteDetail(int id = 0, int productId = 0)
+        {
+            if(productId != 0 && id != 0)
+            {
+                OrderDataService.DeleteProductInOrders(id, productId);
+                
+            }
+            return RedirectToAction("Details", new { id = id });
         }
 
     }

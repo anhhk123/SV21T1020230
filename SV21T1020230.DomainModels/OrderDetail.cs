@@ -28,6 +28,7 @@ namespace SV21T1020230.DomainModels
         public DateTime? ShippedTime { get; set; }
         public DateTime? FinishedTime { get; set; }
         public int Status { get; set; }
+        public List<ProductInOrderDetail> ListProductInOrder {  get; set; }
         /// <summary>
         /// Mô tả trạng thái đơn hàng dựa trên mã đơn hàng
         /// </summary>

@@ -49,5 +49,34 @@ namespace SV21T1020230.BusinessLayers
         {
             return orderDb.GetOrder(id);
         }
+
+        /// <summary>
+        /// Xóa đơn hàng bằng id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static bool DeleteOrderById(int id)
+        {
+            return orderDb.DeleteOrder(id);
+        }
+        /// <summary>
+        /// Danh sách sản phẩm trong order
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        public static List<ProductInOrderDetail> ListProductInOrders(int orderId)
+        {
+            return orderDb.ListOfProductInOrderDetail(orderId).ToList();
+        }
+        /// <summary>
+        /// Xóa sản phẩm khỏi hóa đơn bằng orderId và productId
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public static bool DeleteProductInOrders(int orderId, int productId)
+        {
+            return orderDb.DeleteProductInDetail(orderId, productId);
+        }
     }
 }

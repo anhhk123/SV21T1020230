@@ -1,4 +1,5 @@
-﻿using SV21T1020230.DomainModels;
+﻿
+using SV21T1020230.DomainModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace SV21T1020230.DataLayers
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        int DeleteOrder(int orderId);
+        bool DeleteOrder(int orderId);
         /// <summary>
         /// Get order by id
         /// </summary>
@@ -53,6 +54,28 @@ namespace SV21T1020230.DataLayers
         /// </summary>
         /// <returns></returns>
         IList<StatusOrder> ListOfStatusOrder();
+
+        /// <summary>
+        /// Chỉnh sửa thông tin chi tiết sản phẩn trong đơn hàng 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        bool EditDetail(int id, int productId);
+        /// <summary>
+        /// Xóa sản phẩm trong hóa đơn
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        bool DeleteProductInDetail(int OrderId, int ProductId);
+        /// <summary>
+        /// Lấy ra danh sách sản phẩm   trong hóa đơn
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <returns></returns>
+        IList<ProductInOrderDetail> ListOfProductInOrderDetail(int orderId);
+
+
 
     }
 }

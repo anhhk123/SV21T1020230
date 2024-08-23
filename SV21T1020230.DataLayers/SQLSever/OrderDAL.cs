@@ -55,7 +55,42 @@ namespace SV21T1020230.DataLayers.SQLSever
             throw new NotImplementedException();
         }
 
-        public int DeleteOrder(int orderId)
+        public bool DeleteOrder(int orderId)
+        {
+            bool result = false;
+            using (var connection = OpenConnection())
+            {
+                var sql = @"delete from OrderDetails where OrderID = @OrderID;
+                            delete from Orders where OrderID = @OrderID";
+                var parameters = new
+                {
+                    orderID = orderId,
+                };
+                result = connection.Execute(sql: sql, param: parameters, commandType: CommandType.Text) > 0;
+            }
+            return result;
+        }
+
+        public bool DeleteProductInDetail(int OrderId, int ProductId)
+        {
+            bool result = false;
+            using(var connection = OpenConnection())
+            {
+                string sql = @"DELETE FROM [dbo].[OrderDetails]
+                                  WHERE OrderID = @orderId
+	                              AND ProductID = @productId";
+                var parameters = new
+                {
+                    orderId = OrderId,
+                    productId = ProductId
+                };
+                result = connection.Execute(sql: sql, param: parameters, commandType: CommandType.Text) > 0;
+                connection.Close();
+            }
+            return result;
+        }
+
+        public bool EditDetail(int id, int productId)
         {
             throw new NotImplementedException();
         }
@@ -162,6 +197,31 @@ namespace SV21T1020230.DataLayers.SQLSever
             }
             return orders;
             
+        }
+
+        public IList<ProductInOrderDetail> ListOfProductInOrderDetail(int orderId)
+        {
+            List<ProductInOrderDetail> data = null;
+            using(var connection = OpenConnection())
+            {
+                string sql = @"SELECT [OrderID]
+                                  ,dbo.OrderDetails.ProductID
+	  
+                                  ,[Quantity]
+                                  ,[SalePrice]
+	                              , dbo.Products.ProductName
+	                              , dbo.Products.Unit
+	                              , Quantity * SalePrice AS ThanhTien
+                              FROM [dbo].[OrderDetails], dbo.Products
+                              where OrderDetails.ProductID = Products.ProductID
+                              AND OrderID = @orderId";
+                var Parameter = new
+                {
+                    orderId = orderId,
+                };
+                data = connection.Query<ProductInOrderDetail>(sql, param: Parameter, commandType: CommandType.Text).ToList();
+            }
+            return data;
         }
 
         public IList<StatusOrder> ListOfStatusOrder()
