@@ -51,7 +51,9 @@ namespace SV21T1020230.BusinessLayers
                 EmployeeID = employeeID,
                 CustomerID = customerID,
                 DeliveryProvince = deliveryProvince,
-                DeliveryAddress = deliveryAddress
+                DeliveryAddress = deliveryAddress,
+                Status = Constants.ORDER_INIT
+
             };
             int orderID = orderDB.Add(data);
             if (orderID > 0)

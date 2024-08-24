@@ -230,7 +230,7 @@ namespace SV21T1020230.BusinessLayers
         /// <param name="pageSize"></param>
         /// <param name="searchValue"></param>
         /// <returns></returns>
-        public static List<Shipper> ListOfShippers(out int rowCount, int page = 1, int pageSize = 1, string searchValue = "")
+        public static List<Shipper> ListOfShippers(out int rowCount, int page = 1, int pageSize = 0, string searchValue = "")
         {
             rowCount = shipperDB.Count(searchValue);
             return shipperDB.List(page, pageSize, searchValue).ToList();

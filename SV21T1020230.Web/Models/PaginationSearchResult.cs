@@ -38,6 +38,10 @@ namespace SV21T1020230.Web.Models
     
     public class EmployeeSearchResult : PaginationSearchResult<Employee>
     {
+
+    }
+    public class ShipperSearchResult : PaginationSearchResult<Shipper>
+    {
     }
     public class ProductSearchResult : PaginationSearchResult<Product>
     {

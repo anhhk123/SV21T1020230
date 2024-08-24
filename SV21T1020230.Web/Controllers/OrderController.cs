@@ -201,11 +201,14 @@ namespace SV21T1020230.Web.Controllers
         public IActionResult Shipping(int id = 0, int shipperId = 0)
         {
             if (shipperId <= 0)
-                return Json("Vui lòng chọn người giao hàng");
+                return Json(new { success = false, message = "Vui lòng chọn người giao hàng" });
+
             bool result = OrderDataService.ShipOrder(id, shipperId);
+
             if (!result)
-                return Json("Đơn hàng không cho phép chuyển cho người giao hàng");
-            return RedirectToAction("Details");
+                return Json(new { success = false, message = "Đơn hàng không cho phép chuyển cho người giao hàng" });
+
+            return Json(new { success = true, redirectUrl = Url.Action("Details", new { id }) });
         }
         /// <summary>
         /// Giao diện trang lập đơn hàng mới 
@@ -300,7 +303,7 @@ namespace SV21T1020230.Web.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public IActionResult RemoveToCart(int id = 0)
+        public IActionResult RemoveFromCart(int id = 0)
         {
             var shoppingCart = GetShoppingCart();
             int index = shoppingCart.FindIndex(m => m.ProductID == id);

@@ -6,7 +6,7 @@ using SV21T1020230.Web.Models;
 
 namespace SV21T1020230.Web.Controllers
 {
-    [Authorize(Roles ="employee")]
+    [Authorize(Roles = $"{WebUserRoles.Administrator},{WebUserRoles.Employee}")]
     public class CustomerController : Controller
     {
         const int PAGE_SIZE = 20;

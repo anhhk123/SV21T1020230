@@ -13,20 +13,20 @@
             </div>
             <div class="form-group">
                 <label>Tên giao dịch</label>
-                <input type="text" name="@nameof(Model.ContactName)" value="@Model.ContactName" class="form-control">
+                <input type="text" class="form-control" name="@nameof(Model.ContactName)" value="@Model.ContactName" class="form-control">
                 
             </div>
             <div class="form-group">
                 <label>Điện thoại</label>
-                <input type="text" name="@nameof(Model.Phone)" value="@Model.Phone" class="form-control">
+                <input type="text" class="form-control" name="@nameof(Model.Phone)" value="@Model.Phone" class="form-control">
             </div>
             <div class="form-group">
                 <label>Email :</label>
-                <input type="text" name="@nameof(Model.Email)" value="@Model.Email" class="form-control">
+                <input type="text" class="form-control" name="@nameof(Model.Email)" value="@Model.Email" class="form-control">
             </div>
             <div class="form-group">
                 <label>Địa chỉ</label>
-                <input type="text" name="@nameof(Model.Address)" value="@Model.Address" class="form-control">
+                <input type="text" class="form-control" name="@nameof(Model.Address)" value="@Model.Address" class="form-control">
             </div>
             <div class="form-group">
                 <label>Tỉnh thành</label>
@@ -45,15 +45,15 @@
                 </select>
                 @Html.ValidationMessageFor( m => m.Province)
             </div>
-            <div class="form-group">
+            <div class="form-group ">
                 <label>Trạng thái</label>
                 @if (Model.IsLocked)
                 {
-                    <input type="checkbox" value="true" checked />
+                    <input type="checkbox" value="@Model.IsLocked" checked name="@nameof(Model.IsLocked)"/>
                 }
                 else
                 {
-                    <input type="checkbox" value="true"  />
+                    <input type="checkbox" value="@Model.IsLocked" />
 
                 }
             </div>
