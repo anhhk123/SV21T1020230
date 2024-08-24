@@ -385,6 +385,14 @@ namespace SV21T1020230.Web.Controllers
             var model = OrderDataService.GetOrderDetail(id, productId);
             return View(model);
         }
+        /// <summary>
+        /// Chỉnh sửa giá bán số lượng hàng trong hóa đơn 
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="productId"></param>
+        /// <param name="quantity"></param>
+        /// <param name="salePrice"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult UpdateDetail(int orderId, int productId, int quantity, decimal salePrice)
         {
@@ -398,7 +406,8 @@ namespace SV21T1020230.Web.Controllers
             if (!result)
                 return Json("Không được phép thay đổi thông tin của đơn hàng này ");
             return Json("");
-        }/// <summary>
+        }
+        /// <summary>
          /// Khởi tạo đơn hàng (lập một đơn hàng mới )
          /// Hàm trả về chuỗi khác rỗng thông báo lỗi nếu đầu vào không hợp lệ 
          /// hoặc việc tạo đơn hàng không thành công

@@ -88,10 +88,16 @@ namespace SV21T1020230.Web.Controllers
             ViewBag.Title = data.CustomerId == 0 ? "Bổ sung khách hàng" : "Cập nhật thông tin khách hàng";
             if (string.IsNullOrEmpty(data.CustomerName))
                 ModelState.AddModelError(nameof(data.CustomerName), "Tên khách hàng không được để trống");
+            if (string.IsNullOrEmpty(data.Phone))
+                ModelState.AddModelError(nameof(data.Phone), "Vui lòng nhập số điện thoại");
+            if (string.IsNullOrEmpty(data.Email))
+                ModelState.AddModelError(nameof(data.Email), "Vui lòng nhập số điện thoại");
+            if (string.IsNullOrEmpty(data.Address))
+                ModelState.AddModelError(nameof(data.Address), "Vui lòng địa chỉ");
             if (string.IsNullOrEmpty(data.ContactName))
                 ModelState.AddModelError(nameof(data.ContactName), "Tên giao dịch không được để trống");
             if (string.IsNullOrEmpty(data.Province))
-                ModelState.AddModelError(nameof(data.Province), "Vui long chọn tỉnh thành");
+                ModelState.AddModelError(nameof(data.Province), "Vui lòng chọn tỉnh thành");
 
             data.Phone = data.Phone ?? "";
             data.Email = data.Email ?? "";
@@ -104,7 +110,13 @@ namespace SV21T1020230.Web.Controllers
 
             if (data.CustomerId == 0)
             {
-                CommonDataService.AddCustomer(data);
+                
+                int id = CommonDataService.AddCustomer(data);
+                if (id == -1)
+                {
+                    ViewBag.Error = "Email đã tồn tại";
+                    return View("Edit", data);
+                }
             }
             else
             {

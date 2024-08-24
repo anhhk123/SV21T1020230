@@ -85,23 +85,20 @@
                 <label class="control-label col-sm-2">Giá hàng:</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="@nameof(Model.Product.Price)" value="@Convert.ToInt64(Model.Product.Price)">
+                    @Html.ValidationMessage(nameof(Model.Product.Price))
                 </div>
+                
+
             </div>
 
             <div class="form-group">
                 <div class="col-lg-offset-2 col-sm-10">
                     <div class="checkbox">
                         <label>
-                            @if (Model.Product.IsSelling == true)
-                            {
-                                <input type="checkbox" value="true" checked name="@nameof(Model.Product.IsSelling)" />
-                            }
-                            else
-                            {
-                                <input type="checkbox" value="false" name="@nameof(Model.Product.IsSelling)" />
-                            }
-                            Hiện đang được bán
+                            <input type="checkbox" name="@nameof(Model.Product.IsSelling)" value="true" @(Model.Product.IsSelling ? "checked" : "") />
+                            Đang bán
                         </label>
+                        <input type="hidden" name="@nameof(Model.Product.IsSelling)" value="false" />
                     </div>
                 </div>
             </div>
@@ -173,7 +170,7 @@
                                 @elem.Description
                             </td>
                             <td style="vertical-align:middle;">@elem.DisplayOrder</td>
-                            <td style="vertical-align:middle;"></td>
+                            <td style="vertical-align:middle;">@elem.IsHidden</td>
                             <td style="vertical-align:middle; text-align:right">
                                 <a class="btn btn-xs btn-primary" href="~/Product/Photo/@Model.Product.ProductId?method=edit&photoId=@elem.PhotoId">
                                     <i class="fa fa-edit"></i>

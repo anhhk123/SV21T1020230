@@ -96,6 +96,7 @@ namespace SV21T1020230.DataLayers.SQLSever
                 var parameters = new
                 {
                     orderID = orderID,
+                    productID = productID,
                 };
                 result = connection.Execute(sql: sql, param: parameters, commandType: CommandType.Text) > 0;
             }
@@ -239,22 +240,25 @@ namespace SV21T1020230.DataLayers.SQLSever
             using (var connection = OpenConnection())
             {
                 var sql = @"if exists(select * from OrderDetails
-                                      where OrderID = @OrderID and ProductID = @ProductID)
-                               update OrderDetails
-                               set Quantity = @Quantity,
-                                       SalePrice = @SalePrice
-                               where OrderID = @OrderID and ProductID = @ProductID
-                           else
-                               insert into OrderDetails(OrderID, ProductID, Quantity, SalePrice)
-                               values(@OrderID, @ProductID, @Quantity, @SalePrice)";
+                            where OrderID = @OrderID and ProductID = @ProductID)
+
+                            update OrderDetails
+                            set Quantity = @Quantity,
+                            SalePrice = @SalePrice
+                            where OrderID = @OrderID and ProductID = @ProductID
+
+                            else
+                            insert into OrderDetails(OrderID, ProductID, Quantity, SalePrice)
+                            values(@OrderID, @ProductID, @Quantity, @SalePrice)";
                 var parameters = new
                 {
-                    orderID = orderID,
-                    productID = productID,
-                    quantity = quantity,
-                    salePrice = salePrice
+                    OrderID = orderID,
+                    ProductID = productID,
+                    Quantity = quantity,
+                    SalePrice = salePrice
                 };
-                result = connection.ExecuteScalar<int>(sql: sql, param: parameters, commandType: CommandType.Text) > 0;
+                result = connection.Execute(sql: sql, param: parameters, commandType: CommandType.Text) > 0;
+                connection.Close();
             }
             return result;
         }

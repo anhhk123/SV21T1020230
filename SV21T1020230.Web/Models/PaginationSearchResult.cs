@@ -43,6 +43,9 @@ namespace SV21T1020230.Web.Models
     public class ShipperSearchResult : PaginationSearchResult<Shipper>
     {
     }
+    public class SupplierSearchResult : PaginationSearchResult<Supplier>
+    {
+    }
     public class ProductSearchResult : PaginationSearchResult<Product>
     {
         public int CategoryID { get; set; }

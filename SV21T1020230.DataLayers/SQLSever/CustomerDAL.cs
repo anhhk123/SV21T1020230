@@ -15,6 +15,11 @@ namespace SV21T1020230.DataLayers.SQLSever
         {
         }
 
+        /// <summary>
+        /// Bổ sung khách hàng 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns>return 0: ko thanh công; -1 email đã tồn tại; lớn hơn 0 thành công</returns>
         public int Add(Customer data)
         {
             int id = 0;
@@ -33,7 +38,18 @@ namespace SV21T1020230.DataLayers.SQLSever
                     Email = data.Email ?? "",
                     IsLocked = data.IsLocked,
                 };
-                id = connection.ExecuteScalar<int>(sql: sql, param: parameters, commandType: CommandType.Text);
+                try
+                {
+                    id = connection.ExecuteScalar<int>(sql: sql, param: parameters, commandType: CommandType.Text);
+
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("UK_Customers_Email"))
+                    {
+                        return -1;
+                    }
+                }
                 connection.Close();
 
             }

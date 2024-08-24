@@ -29,7 +29,15 @@
                     <td>@item.Email</td>
                     <td>@item.Address </td>
                     <td>@item.Province </td>
-                    <td>@item.IsLocked</td>
+                    @if (item.IsLocked)
+                    {
+                        <td>Bị khóa</td>
+                    }
+                    else
+                    {
+                        <td>Không</td>
+                    }
+                    
                     <td class="text-right">
                         <a href="~/Customer/Edit/@item.CustomerId" class="btn btn-xs btn-info">
                             <i class="fa fa-edit"></i>

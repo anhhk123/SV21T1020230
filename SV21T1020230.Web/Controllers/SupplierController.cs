@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SV21T1020230.BusinessLayers;
 using SV21T1020230.DomainModels;
+using SV21T1020230.Web.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SV21T1020230.Web.Controllers
@@ -19,11 +20,19 @@ namespace SV21T1020230.Web.Controllers
             if (rowCount % PAGE_SZE > 0)
                 pageCount += 1;
 
-
+            SupplierSearchResult result = new SupplierSearchResult()
+            {
+                data = data,
+                RowCount = rowCount,
+                Page = page,
+                PageSize = PAGE_SZE,
+                SearchValue = searchValue,
+                
+            };
             ViewBag.RowCount = rowCount;
             ViewBag.PageCount = pageCount;
             ViewBag.SearchValue = searchValue;
-            return View(data);
+            return View(result);
         }
         public IActionResult Create()
         {
@@ -82,6 +91,7 @@ namespace SV21T1020230.Web.Controllers
             if (data.SupplierID == 0)
             {
                 CommonDataService.AddSupplier(data);
+                
             }
             else
             {

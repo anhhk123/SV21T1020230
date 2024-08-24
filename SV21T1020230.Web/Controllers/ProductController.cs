@@ -94,6 +94,9 @@ namespace SV21T1020230.Web.Controllers
                 ModelState.AddModelError(nameof(product.CategoryID), "Vui lòng chọn loại sản phẩm");
             if (product.SupplierID == 0)
                 ModelState.AddModelError(nameof(product.SupplierID), "Vui lòng chọn nhà cung cấp");
+            if (product.Price == 0)
+                ModelState.AddModelError(nameof(product.Price), "Vui lòng nhập giá sản phẩm");
+
 
             product.Photo = product.Photo ?? "";
             product.Unit = product.Unit ?? "";
