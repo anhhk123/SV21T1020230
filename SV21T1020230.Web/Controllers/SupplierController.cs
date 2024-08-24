@@ -70,7 +70,7 @@ namespace SV21T1020230.Web.Controllers
             return View(supplier);
         }
         [HttpPost]
-        public IActionResult Save(Supplier data)
+        public IActionResult Save(Supplier data, IFormFile? uploadPhoto)
         {
             ViewBag.Title = data.SupplierID == 0 ? "Bổ sung nhà cung cấp" : "Cập nhật nhà cung cấp";
             if (string.IsNullOrEmpty(data.SupplierName))
@@ -83,8 +83,26 @@ namespace SV21T1020230.Web.Controllers
                 ModelState.AddModelError(nameof(data.Phone), "Số điện thoại không được để trống");
             if (string.IsNullOrEmpty(data.Province))
                 ModelState.AddModelError(nameof(data.Province), "Tỉnh thành không được để trống");
+            
+            
+            if (uploadPhoto != null)
+            {
+                string fileName = $"{DateTime.Now.Ticks}_{uploadPhoto.FileName}"; //Tên file sẽ lưu
+                string folder = Path.Combine(ApplicationContext.WebRootPath, @"Images\Supplier"); //đường dẫn đến thư mục lưu file
+                                                                                                   // Kiểm tra và tạo thư mục nếu chưa tồn tại
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+                string filePath = Path.Combine(folder, fileName); //Đường dẫn đến file cần lưu D:\images\supplier\photo.png
 
-            if(!ModelState.IsValid)
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    uploadPhoto.CopyTo(stream);
+                }
+                data.Photo = fileName;
+            }
+            if (!ModelState.IsValid)
             {
                 return View("Edit", data);
             }

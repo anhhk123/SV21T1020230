@@ -34,6 +34,7 @@
             <table class="table table-bordered table-hover table-striped">
                 <thead>
                     <tr class="bg-primary">
+                        <th>Ảnh</th>
                         <th>Tên nhà cung cấp</th>
                         <th>Tên liên hệ</th>
                         <th>Tỉnh thành</th>
@@ -48,13 +49,17 @@
                         foreach (var item in Model.data)
                         {
                             <tr>
+                                <td>
+                                    <img class="profile-user-img img-responsive img-bordered"
+                                         alt="no-photo"
+                                         src="~/images/Supplier/@(string.IsNullOrWhiteSpace(item.Photo) ? "nophoto.png" : item.Photo)">
+                                </td>
                                 <td>@item.SupplierName</td>
                                 <td>@item.ContactName</td>
                                 <td>@item.Province</td>
                                 <td>@item.Address</td>
                                 <td>@item.Email</td>
                                 <td>@item.Phone</td>
-                                <td> </td>
                                 <td class="text-right">
                                     <a href="~/Supplier/Edit/@item.SupplierID" class="btn btn-xs btn-info">
                                         <i class="fa fa-edit"></i>
