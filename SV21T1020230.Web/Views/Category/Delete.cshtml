@@ -1,5 +1,5 @@
-﻿@model SV21T1020230.DomainModels.Category
-
+﻿
+@model Category
 @{
     ViewBag.Title = "Xóa danh mục hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,14 +7,14 @@
 
 <div class="box box-danger">
     <div class="box box-body">
-        <form action="~/Category/Delete" method="post">
+        <form action="~/Category/Delete/@Model.CategoryId" method="post">
             <div class="form-group">
                 <label>Tên danh mục</label>
-                <p class="form-control-static">Quần áo</p>
+                <p class="form-control-static">@Model.CategoryName</p>
             </div>
             <div class="form-group">
                 <label>Chi tiết</label>
-                <p class="form-control-static">Quần áo nam, quần áo nữ</p>
+                <p class="form-control-static">@Model.Description</p>
 
             </div>
             

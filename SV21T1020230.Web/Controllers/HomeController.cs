@@ -30,8 +30,8 @@ namespace SV21T1020230.Web.Controllers
         }
         public IActionResult Customers()
         {
-            var model = BusinessLayers.CommonDataService.ListOfCustomers();
-            return View(model);
+            
+            return View();
         }
     }
 }

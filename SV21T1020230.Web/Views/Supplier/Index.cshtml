@@ -1,5 +1,5 @@
-﻿@model IEnumerable<SV21T1020230.DomainModels.Supplier>
-
+﻿
+@model IEnumerable<Supplier>
 @{
     ViewBag.Title = "Danh sách nhà cung cấp";
 
@@ -10,7 +10,7 @@
 <div class="box box-primary">
     <div class="box-body">
         <!--Form nhập đầu vào tìm kiếm-->
-        <form id="formSearch" action="~/Shipper" method="get">
+        <form id="formSearch" action="~/Supplier" method="get">
             <div class="input-group">
                 <input name="searchValue"
                        type="text"
@@ -30,7 +30,7 @@
 
         </form>
         <!--Hiển thị dữ liệu-->
-        <p>Có <strong>100</strong> nhà cung cấp trong tổng số <strong>10</strong> trang</p>
+        <p>Có <strong>@ViewBag.RowCount</strong> nhà cung cấp trong tổng số <strong>@ViewBag.PageCount</strong> trang</p>
         <div class="table-responsive">
             <table class="table table-bordered table-hover table-striped">
                 <thead>
@@ -46,21 +46,21 @@
                 </thead>
                 <tbody>
                     @{
-                        for (int i = 1; i < 10; i++)
+                        foreach (var item in Model)
                         {
                             <tr>
-                                <td>Công ty Xuất nhập khẩu Thành Hưng</td>
-                                <td>Công ty Thành Hưng</td>
-                                <td>Hà Nội</td>
-                                <td>123 Phùng Hưng</td>
-                                <td>thanhhung@company.com</td>
-                                <td>0977555123</td>
+                                <td>@item.SupplierName</td>
+                                <td>@item.ContactName</td>
+                                <td>@item.Province</td>
+                                <td>@item.Address</td>
+                                <td>@item.Email</td>
+                                <td>@item.Phone</td>
                                 <td> </td>
                                 <td class="text-right">
-                                    <a href="~/Supplier/Edit/123" class="btn btn-xs btn-info">
+                                    <a href="~/Supplier/Edit/@item.SupplierID" class="btn btn-xs btn-info">
                                         <i class="fa fa-edit"></i>
                                     </a>
-                                    <a href="~/Supplier/Delete/123" class="btn btn-xs btn-danger">
+                                    <a href="~/Supplier/Delete/@item.SupplierID" class="btn btn-xs btn-danger">
                                         <i class="fa fa-remove"></i>
                                     </a>
                                 </td>
