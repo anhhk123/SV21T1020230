@@ -1,86 +1,64 @@
-﻿
-
+﻿@model PaginationSearchInput
 @{
-    ViewBag.Title = "Quản lý danh sách người giao hàng";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Quản lý người giao hàng";
 }
-
 
 <div class="box box-primary">
     <div class="box-body">
-        <!--Form nhập đầu vào tìm kiếm-->
-        <form id="formSearch" action="~/Categories/Index" method="post">
+        <!-- Form nhập đầu vào tìm kiếm -->
+        <form id="formSearch" action="~/Shipper/Search" method="get" data-container="#searchResult">
             <div class="input-group">
-                <input name="searchValue"
-                       type="text"
-                       class="form-control"
-                       placeholder="Nhập tên khách hàng cần tìm"
-                       autofocus />
+                <input type="hidden" name="@nameof(Model.PageSize)" value="@Model.PageSize" />
+                <input name="@nameof(Model.SearchValue)" type="text" class="form-control"
+                       placeholder="Nhập tên người giao hàng cần tìm..." autofocus value="@Model.SearchValue">
                 <div class="input-group-btn">
                     <button class="btn btn-info" type="submit">
-                        <i class="fa fa-search"></i>
+                        <i class="glyphicon glyphicon-search"></i>
                     </button>
-                    <a href="~/s/Create" class="btn btn-primary" style="margin-left:5px">H''
-                        <i class="fa fa-plus"></i>Bổ sung
+                    <a href="~/Shipper/Create" class="btn btn-primary" style="margin-left:5px">
+                        <i class="fa fa-plus"></i> Bổ sung
                     </a>
                 </div>
             </div>
-
-
         </form>
-        @{
-            if (ViewBag.ErrorMessageIndex != null)
-            {
-                <div class="alert alert-danger" role="alert">
-                    @ViewBag.ErrorMessageIndex
-                </div>
-            }
-        }
-        <!--Hiển thị dữ liệu-->
-        <p>Có <strong>100</strong> khách hàng trong tổng số <strong>10</strong> trang</p>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover table-striped">
-                <thead>
-                    <tr class="bg-primary">
-                        <th>"Tên người giao hàng"</th>
-                        <th>"Số điện thoại"</th>
-                        <th></th>
-                        <th style="width:80px"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < 10; i++)
-                    {
-                        <tr>
-                            
-                            <td>
-                                Shipper A
-                            </td>
-                            <td>
-                                0336238660
-                            </td>
-                            <td class="text-right">
-                                <a href="~/Shipper/Edit/123" class="btn btn-xs btn-info">
-                                    <i class="fa fa-edit"></i>
-                                </a>
-                                <a href="~/Shipper/Delete/123" class="btn btn-xs btn-danger">
-                                    <i class="fa fa-remove"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="text-center">
-            <ul class="pagination">
-                <li><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-            </ul>
+
+        <!-- Hiển thị kết quả tìm kiếm -->
+        <div id="searchResult">
         </div>
     </div>
 </div>
-</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#formSearch").submit(function (e) {
+                e.preventDefault();
+                paginationSearch(this, 1);
+                return;
+            });
+            paginationSearch("#formSearch", @Model.Page);
+        });
+
+        function paginationSearch(formSearch, page) {
+            var action = $(formSearch).prop("action");
+            var method = $(formSearch).prop("method");
+            var container = $(formSearch).data("container");
+
+            var searchData = $(formSearch).serializeArray();
+            searchData.push({ "name": "Page", "value": page });
+
+            $.ajax({
+                url: action,
+                type: method,
+                data: searchData,
+                async: false,
+                error: function () {
+                    alert("Your request is not valid!");
+                },
+                success: function (data) {
+                    $(container).html(data);
+                }
+            });
+        }
+    </script>
+}
